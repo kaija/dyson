@@ -4,9 +4,11 @@
  * Module dependencies.
  */
 
+var fs = require('fs');
 var app = require('../app');
 var debug = require('debug')('dyson:server');
 var http = require('http');
+var https = require('https');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +22,17 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * Create HTTPS server
+ */
+var options = {
+  key: fs.readFileSync(__dirname + "/server.key"),
+  cert: fs.readFileSync(__dirname + "/server.crt")
+};
+
+var https_port = normalizePort(process.env.HTTPS_PORT || '8443');
+https.createServer(options, app).listen(https_port);
 
 /**
  * Listen on provided port, on all network interfaces.
