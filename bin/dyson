@@ -14,7 +14,7 @@ var https = require('https');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 
 /**
@@ -31,7 +31,7 @@ var options = {
   cert: fs.readFileSync(__dirname + "/server.crt")
 };
 
-var https_port = normalizePort(process.env.HTTPS_PORT || '8443');
+var https_port = normalizePort(process.env.HTTPS_PORT || '443');
 https.createServer(options, app).listen(https_port);
 
 /**
