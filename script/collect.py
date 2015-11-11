@@ -22,20 +22,20 @@ import requests
 from optparse import OptionParser
 
 def read_apt_pkg():
-  pkgs = {}
+  pkgs = []
   cache = apt.Cache()
   for pkg in cache:
     if pkg.installed:
-      pkgs[pkg.name] = str(pkg.versions[0].version)
+      pkgs.append({"package":pkg.name, "version":str(pkg.versions[0].version)})
 #      print pkg.name + ":" + str(pkg.versions[0].version)
   return pkgs
 
 
 def read_python_pkg():
-  pkgs = {}
+  pkgs = []
   for dist in pkg_resources.working_set:
     #print dist.project_name + ":" + dist.version
-    pkgs[dist.project_name] = dist.version
+    pkgs.append({"package":dist.project_name, "version":dist.version})
   return pkgs
 
 def get_hostname():
