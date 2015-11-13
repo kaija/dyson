@@ -7,6 +7,11 @@
 var fs = require('fs');
 var app = require('../app');
 var debug = require('debug')('dyson:server');
+
+require('pmx').init({
+  http : true
+});
+
 var http = require('http');
 var https = require('https');
 
