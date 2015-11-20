@@ -103,4 +103,42 @@ router.post('/report', function(req, res, next) {
   });
 });
 
+router.get('/search', function(req, res, next) {
+  project = null;
+  if (req.query.project) {
+    project = req.query.project;
+  }
+  var type = null;
+  if (req.query.type) {
+    type = req.query.type;
+  }
+  var pkg = null;
+  if (req.query.package) {
+    pkg = req.query.package;
+  }
+  pool.acquire(function(err, client) {
+    if (err) {
+      response_db_error(res, 500, "out of db connection!");
+    }else {
+      client.search({
+        index: 'dyson',
+        type: 'report',
+        query: {
+          "filtered" : {
+            "filter" : {
+              "packages" : {
+                "apt" : ["vim"]
+              }
+            }
+          }
+        }
+      }).then(function(response){
+        console.log(response);
+        res.send(response);
+      });
+      pool.release(client);
+    }
+  });
+});
+
 module.exports = router;
