@@ -103,6 +103,34 @@ router.post('/report', function(req, res, next) {
   });
 });
 
+router.get('/list', function(req,res, next) {
+  host = req.query.project;
+  pool.acquire(function(err, client){
+    if (err) {
+      response_db_error(res, 500, "out of db connection!");
+    }else {
+      client.search({
+        index: 'dyson',
+        type: 'report',
+        query: {
+          "filtered" : {
+            "filter" : {
+              "host" : host
+            }
+          }
+        }
+      }).then(function(response){
+        if (response.hits.total > 0) {
+          data = response.hits.hits;
+          res.json(data);
+        }else{
+          res.json([]);
+        }
+      });
+    }
+  });
+});
+
 router.get('/search', function(req, res, next) {
   project = null;
   if (req.query.project) {
@@ -127,14 +155,29 @@ router.get('/search', function(req, res, next) {
           "filtered" : {
             "filter" : {
               "packages" : {
-                "apt" : ["vim"]
+                type : [pkg]
               }
             }
           }
         }
       }).then(function(response){
-        console.log(response);
-        res.send(response);
+        data = []
+        if (response.hits.total > 0) {
+          datas = response.hits.hits;
+          for (i in datas) {
+            console.log(datas[i]);
+            ps = datas[i]._source.packages[type];
+            console.log(ps);
+            for (p in ps) {
+              if(ps[p].package == pkg){
+                data.push({'host':datas[i]._source.host, 'version':ps[p].version});
+              }
+            }
+          }
+          res.json(data);
+        }else{
+          res.json([]);
+        }
       });
       pool.release(client);
     }
