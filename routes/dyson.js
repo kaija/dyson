@@ -110,9 +110,14 @@ router.get('/list_package', function(req, res, next) {
           }
         }
       }).then(function(response){
-        if (response.hits.total > 0  && response.hits.hits[0].project_name == name) {
-          console.log(JSON.stringify(response));
-          res.send(response.hits.hits[0]._source.packages);
+        if (response.hits.total > 0 ) {
+          for (var i = 0 ; i < response.hits.hits.length ; i ++){
+            console.log(response.hits.hits[i]._source.project_name + "<\n");
+            if(response.hits.hits[i]._source.project_name == name){
+              res.send(response.hits.hits[i]._source.packages);
+              break;
+            }
+          }
         }else{
           res.send([]);
         }
