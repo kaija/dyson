@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dyson Package Manager</title>
+  <script src="/js/jquery-1.11.3.min.js" ></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css" >
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="/css/bootstrap-theme.min.css" >
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="/js/bootstrap.min.js" ></script>
+</head>
+<body>
+<div class="row">
+  <div class="col-xs-2 col-md-1"></div>
+  <div class="col-xs-4 col-md-4">
+    <select id="selectProj" class="form-control" onchange="project_selected(this);">
+    </select>
+  </div>
+  <div class="col-xs-2 col-md-1"></div>
+    <div class="col-xs-4 col-md-4">
+    <select id="selectPkg" class="form-control">
+    </select>
+  </div>
+  <div class="col-xs-2 col-md-1"></div>
+</div>
+<div class="row">
+  <div class="col-xs-2 col-md-1">left</div>
+  <div class="col-xs-8 col-md-10">data</div>
+  <div class="col-xs-2 col-md-1">right</div>
+</div>
+<script type="text/javascript">
+  $( document ).ready(function() {
+    $.ajax({  
+      url: "dyson/list_project",  
+      type: "GET",
+      success: function(data){
+        $("#selectProj").empty();
+        for (var i = 0; i < data.length ; i ++) {
+          $("#selectProj").append($("<option></option>").attr("value", data[i]).text(data[i]));
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
+    function project_selected(sel) {
+      $.get("dyson/list_package?project=" + sel.value, function(result){
+        //alert(result);
+        $("#selectPkg").empty();
+        for (var i = 0; i < result.length ; i ++){
+          $("#selectPkg").append($("<option></option>").attr("value", result[i]).text(result[i]));
+        }
+      });
+      //alert(sel.value);
+    }
+</script>
+</body>
+</html>

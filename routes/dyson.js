@@ -76,6 +76,52 @@ router.post('/project/create', function(req, res, next) {
   });
 });
 
+router.get('/list_project', function(req, res, next) {
+  pool.acquire(function(err, client) {
+    if (err) {
+      response_db_error(res, 500, "out of db connection!");
+    }else {
+      client.get ({
+        index: "dyson",
+        type: "project",
+        id: "1"
+      }).then(function(response){
+        res.json(response._source.projects);
+        pool.release(client);
+      });
+    }
+  });
+});
+
+router.get('/list_package', function(req, res, next) {
+  name = req.query.project;
+  pool.acquire(function(err, client) {
+    if (err) {
+      response_db_error(res, 500, "out of db connection!");
+    }else {
+      client.search ({
+        index: "dyson",
+        type: "project_detail",
+        query: {
+          "filtered" : {
+            "filter" : {
+              "project_name" : name
+            }
+          }
+        }
+      }).then(function(response){
+        if (response.hits.total > 0  && response.hits.hits[0].project_name == name) {
+          console.log(JSON.stringify(response));
+          res.send(response.hits.hits[0]._source.packages);
+        }else{
+          res.send([]);
+        }
+        pool.release(client);
+      });
+    }
+  });
+});
+
 router.post('/report', function(req, res, next) {
   body = req.body;
   pool.acquire(function(err, client) {
