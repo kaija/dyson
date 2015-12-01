@@ -54,7 +54,8 @@ def compose_report(host="localhost", port=443):
     uri = "https://" + host + ":" + port + "/dyson/report"
   else:
     uri = "https://" + host + "/dyson/report"
-  r = requests.post(uri, json=data, verify=False)
+  print json.dumps(data)
+  r = requests.post(uri, data=json.dumps(data),headers={"content-type": "application/json"}, verify=False)
   if r.status_code == 200:
     return True
   else:

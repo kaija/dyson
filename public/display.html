@@ -21,14 +21,23 @@
   </div>
   <div class="col-xs-2 col-md-1"></div>
     <div class="col-xs-4 col-md-4">
-    <select id="selectPkg" class="form-control">
+    <select id="selectPkg" class="form-control" onchange="package_selected(this);">
     </select>
   </div>
   <div class="col-xs-2 col-md-1"></div>
 </div>
 <div class="row">
   <div class="col-xs-2 col-md-1">left</div>
-  <div class="col-xs-8 col-md-10">data</div>
+  <div class="col-xs-8 col-md-10">
+    <table class="table table-striped">
+      <thead>
+        <th>Host</th>
+        <th>Version</th>
+      </thead>
+      <tbody id="display_version">
+      </tbody>
+    </table>
+  </div>
   <div class="col-xs-2 col-md-1">right</div>
 </div>
 <script type="text/javascript">
@@ -53,6 +62,16 @@
         for (var i = 0; i < result.length ; i ++){
           $("#selectPkg").append($("<option></option>").attr("value", result[i]).text(result[i]));
         }
+      });
+      //alert(sel.value);
+    }
+</script>
+<script type="text/javascript">
+    function package_selected(sel) {
+      pkg = sel.value.split('/');
+      $.get("dyson/search?type=" + pkg[1] + "&package=" + pkg[0], function(result){
+        alert(JSON.stringify(result));
+        $("#display_version").html("<tr><td>1</td><td>2</td></td>");
       });
       //alert(sel.value);
     }

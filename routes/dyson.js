@@ -129,6 +129,7 @@ router.get('/list_package', function(req, res, next) {
 
 router.post('/report', function(req, res, next) {
   body = req.body;
+  console.log(body);
   pool.acquire(function(err, client) {
     if (err) {
       response_db_error(res, 500, "out of db connection!");
@@ -212,6 +213,7 @@ router.get('/search', function(req, res, next) {
           }
         }
       }).then(function(response){
+        console.log(JSON.stringify(response));
         data = []
         if (response.hits.total > 0) {
           datas = response.hits.hits;
