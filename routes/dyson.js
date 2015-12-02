@@ -16,11 +16,10 @@ var pool = poolModule.Pool({
   },
   destroy  : function(client) {
     console.log("destroy elasticsearch client");
-    client.end(); 
   },
-  max      : 10,
+  max      : 20,
   // optional. if you set this, make sure to drain() (see step 3)
-  min      : 2, 
+  min      : 20,
   // specifies how long a resource can stay idle in pool before being removed
   // idleTimeoutMillis : 30000,
   // disable idle destroy
@@ -112,7 +111,7 @@ router.get('/list_package', function(req, res, next) {
       }).then(function(response){
         if (response.hits.total > 0 ) {
           for (var i = 0 ; i < response.hits.hits.length ; i ++){
-            console.log(response.hits.hits[i]._source.project_name + "<\n");
+            //console.log(response.hits.hits[i]._source.project_name + "<\n");
             if(response.hits.hits[i]._source.project_name == name){
               res.send(response.hits.hits[i]._source.packages);
               break;
@@ -129,18 +128,12 @@ router.get('/list_package', function(req, res, next) {
 
 router.post('/report', function(req, res, next) {
   body = req.body;
-  console.log(body);
+  //console.log(body);
   pool.acquire(function(err, client) {
     if (err) {
       response_db_error(res, 500, "out of db connection!");
     }else {
-      var data = {
-        host: body.host,
-        packages: {
-          apt:body.apt,
-          python:body.python
-        }
-      };
+      var data = body;
       client.index ({
         index: "dyson",
         type: "report",
@@ -187,6 +180,7 @@ router.get('/search', function(req, res, next) {
   project = null;
   if (req.query.project) {
     project = req.query.project;
+    console.log("project = " + project);
   }
   var type = null;
   if (req.query.type) {
@@ -203,6 +197,7 @@ router.get('/search', function(req, res, next) {
       client.search({
         index: 'dyson',
         type: 'report',
+        size: 100,
         query: {
           "filtered" : {
             "filter" : {
@@ -212,18 +207,18 @@ router.get('/search', function(req, res, next) {
             }
           }
         }
+
+        //q: 'project:' + project
       }).then(function(response){
-        console.log(JSON.stringify(response));
+        //console.log(JSON.stringify(response));
         data = []
         if (response.hits.total > 0) {
           datas = response.hits.hits;
-          for (i in datas) {
-            console.log(datas[i]);
-            ps = datas[i]._source.packages[type];
-            console.log(ps);
-            for (p in ps) {
-              if(ps[p].package == pkg){
-                data.push({'host':datas[i]._source.host, 'version':ps[p].version});
+          for (var i = 0 ; i < response.hits.total ; i++) {
+            ps = datas[i]._source[type];
+            for (var idx = 0; idx < ps.length ; idx ++) {
+              if(ps[idx].package == pkg){
+                data.push({'host':datas[i]._source.host, 'version':ps[idx].version});
               }
             }
           }

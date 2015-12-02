@@ -71,7 +71,7 @@
 <script type="text/javascript">
     function package_selected(sel) {
       pkg = sel.value.split('/');
-      $.get("dyson/search?type=" + pkg[1] + "&package=" + pkg[0], function(result){
+      $.get("dyson/search?project=" + $("#selectProj").val() + "&type=" + pkg[1] + "&package=" + pkg[0], function(result){
         //alert(JSON.stringify(result));
         text = "";
         for (var i = 0; i < result.length ; i ++){
