@@ -221,6 +221,7 @@ router.get('/search', function(req, res, next) {
                 data.push({'host':datas[i]._source.host, 'version':ps[idx].version});
               }
             }
+            data.sort(function(a, b){return -a.host.localeCompare(b.host);});
           }
           res.json(data);
         }else{

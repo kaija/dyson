@@ -27,7 +27,8 @@ def read_apt_pkg():
   cache = apt.Cache()
   for pkg in cache:
     if pkg.installed:
-      pkgs.append({"package":pkg.name, "version":str(pkg.versions[0].version)})
+      #pkgs.append({"package":pkg.name, "version":str(pkg.versions[0].version)})
+      pkgs.append({"package":pkg.name, "version":pkg.installed.version})
 #      print pkg.name + ":" + str(pkg.versions[0].version)
   return pkgs
 

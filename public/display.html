@@ -47,7 +47,7 @@
       type: "GET",
       success: function(data){
         $("#selectProj").empty();
-        $("#selectProj").append($("<option></option selected=\"selected\">").attr("value", "").text(""));
+        $("#selectProj").append($("<option></option selected=\"selected\">").attr("value", "").text("Please select a project!!!"));
         for (var i = 0; i < data.length ; i ++) {
           $("#selectProj").append($("<option></option>").attr("value", data[i]).text(data[i]));
         }
@@ -60,7 +60,7 @@
       $.get("dyson/list_package?project=" + sel.value, function(result){
         //alert(result);
         $("#selectPkg").empty();
-        $("#selectPkg").append($("<option></option selected=\"selected\">").attr("value", "").text(""));
+        $("#selectPkg").append($("<option></option selected=\"selected\">").attr("value", "").text("Please select a package"));
         for (var i = 0; i < result.length ; i ++){
           $("#selectPkg").append($("<option></option>").attr("value", result[i]).text(result[i]));
         }
@@ -72,10 +72,21 @@
     function package_selected(sel) {
       pkg = sel.value.split('/');
       $.get("dyson/search?project=" + $("#selectProj").val() + "&type=" + pkg[1] + "&package=" + pkg[0], function(result){
-        //alert(JSON.stringify(result));
         text = "";
+        //console.log(JSON.stringify(result));
         for (var i = 0; i < result.length ; i ++){
-          text = text.concat("<tr><td>" + result[i].host +"</td><td>" + result[i].version + "</td></td>");
+          toks = result[i].host.split('-');
+          var color = "active";
+          if (toks.length > 2) {
+            if (toks[1] == 'p') {
+               color = "success";
+            }else if (toks[1] == 'b') {
+               color = "warning";
+            }else if (toks[1] == 'a') {
+               color = "info";
+            }
+          }
+          text = text.concat("<tr class=\"" + color + "\"><td>" + result[i].host +"</td><td>" + result[i].version + "</td></td>");
         }
         $("#display_version").html(text);
       });
