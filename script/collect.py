@@ -19,6 +19,7 @@ import json
 import socket
 #import httplib
 import requests
+import platform
 from optparse import OptionParser
 
 def read_apt_pkg():
@@ -48,6 +49,8 @@ def get_hostname():
 def compose_report(host="localhost", port=443):
   data = {}
   data['host'] = get_hostname()
+  data['platform'] = platform.linux_distribution()
+  data['kernel'] = platform.platform()
   data['apt'] = read_apt_pkg()
   data['python'] = read_python_pkg()
   if port != 443:
