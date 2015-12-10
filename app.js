@@ -49,6 +49,8 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
   done(null, id);
 });
+app.use('/', routes);
+app.use('/dyson', dyson);
 
 if (config.enable_web_auth){
   app.use(passport.authenticate('digest'), express.static(path.join(__dirname, 'public')));
@@ -75,8 +77,6 @@ passport.use(new DigestStrategy({ qop: 'auth' },
 
 
 
-app.use('/', routes);
-app.use('/dyson', dyson);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
